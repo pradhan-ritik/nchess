@@ -14,7 +14,7 @@ struct Movelist {
         moves[++index] = move;
     }
 
-    inline void remove_move(Move move) {
+    inline void remove_move() {
         index--;
     }
 
