@@ -56,8 +56,7 @@ struct Board {
 
     // small and quick functions
     inline bool is_move_legal(Move move) {
-        play_move(move);
-        bool legal = !king_attackers();
+        bool legal = play_move(move);
         undo_last_move();
         return legal;
     }
@@ -222,7 +221,7 @@ struct Board {
         return turn ? RANK_2 : RANK_7; // rank 2 for black and rank 7 for white
     }
 
-    inline BB get_second_pawn_rank() {
+    inline BB get_third_pawn_rank() {
         return turn ? RANK_6 : RANK_3; // rank 6 for black and rank 3 for white
     }
 };

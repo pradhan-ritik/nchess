@@ -26,37 +26,37 @@ Board::Board(const char* fen) {
     bool running = true;
     while (running) {
         cur = *(fen++);
-        white_piece = std::islower(cur);
+        white_piece = std::isupper(cur);
         cur = std::tolower(cur);
         switch (cur) {
             case 'p':
-                if (white_piece) set_piece_on_pos(PAWN, pos^7);
-                else set_opposite_color_piece_on_pos(PAWN, pos^7);
+                if (white_piece) set_piece_on_pos(PAWN, pos^63);
+                else set_opposite_color_piece_on_pos(PAWN, pos^63);
                 break;
 
             case 'n':
-                if (white_piece) set_piece_on_pos(KNIGHT, pos^7);
-                else set_opposite_color_piece_on_pos(KNIGHT, pos^7);
+                if (white_piece) set_piece_on_pos(KNIGHT, pos^63);
+                else set_opposite_color_piece_on_pos(KNIGHT, pos^63);
                 break;
 
             case 'b':
-                if (white_piece) set_piece_on_pos(BISHOP, pos^7);
-                else set_opposite_color_piece_on_pos(BISHOP, pos^7);
+                if (white_piece) set_piece_on_pos(BISHOP, pos^63);
+                else set_opposite_color_piece_on_pos(BISHOP, pos^63);
                 break;
 
             case 'r':
-                if (white_piece) set_piece_on_pos(ROOK, pos^7);
-                else set_opposite_color_piece_on_pos(ROOK, pos^7);
+                if (white_piece) set_piece_on_pos(ROOK, pos^63);
+                else set_opposite_color_piece_on_pos(ROOK, pos^63);
                 break;
 
             case 'q':
-                if (white_piece) set_piece_on_pos(QUEEN, pos^7);
-                else set_opposite_color_piece_on_pos(QUEEN, pos^7);
+                if (white_piece) set_piece_on_pos(QUEEN, pos^63);
+                else set_opposite_color_piece_on_pos(QUEEN, pos^63);
                 break;
 
             case 'k':
-                if (white_piece) set_piece_on_pos(KING, pos^7);
-                else set_opposite_color_piece_on_pos(KING, pos^7);
+                if (white_piece) set_piece_on_pos(KING, pos^63);
+                else set_opposite_color_piece_on_pos(KING, pos^63);
                 break;
 
             case ' ':
@@ -142,7 +142,7 @@ void Board::display_game(bool show_bitboards) {
                 break;
         }
 
-        if (!is_black_piece(i^63) && cur != ' ') cur += 32; // turns it into lower case
+        if (!is_white_piece(i^63) && cur != ' ') cur += 32; // turns it into lower case
         if (file(i^63) == 7) printf("\n");
         if (!file(i)) printf("%i | ", (rank(i)^7)+1);
         printf("%c | ", cur);
