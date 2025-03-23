@@ -67,22 +67,60 @@ template <MOVEGEN_STAGE type> inline void generate_pawn_moves(Board& board, Move
     }
 }
 
-template <MOVEGEN_STAGE type> inline void generate_knight_moves(Board& board, Movelist& movelist) {
+// template <MOVEGEN_STAGE type> inline void generate_knight_moves(Board& board, Movelist& movelist) {
+//     bool turn = board.get_turn();
+//     BB same_team_knights = board.get_piece_bb(KNIGHT, turn);
+//     BB no_hit = board.get_color(); // same team
+
+//     if constexpr (type == GENERATE_NOISY) {
+//         no_hit |= board.get_empties();
+//     }
+
+//     else if constexpr (type == GENERATE_QUIET) {
+//         no_hit |= board.get_color(!turn); // other team
+//     }
+
+//     while (same_team_knights) {
+//         int from_ = pop_lsb(same_team_knights);
+//         BB moves = knight_attacks(bb(from_)) & ~no_hit;
+//         while (moves) {
+//             movelist.add_move(init_move(from_, pop_lsb(moves), NORMAL_MOVE));
+//         }
+//     }
+// }
+
+template <MOVEGEN_STAGE type, PIECE piece> inline void generate_major_piece_moves(Board& board, Movelist& movelist) {
+    static_assert(piece != PAWN && piece != KING);
     bool turn = board.get_turn();
-    BB same_team_knights = board.get_piece_bb(KNIGHT, turn);
+    BB same_team_pieces = board.get_piece_bb(piece, turn);
     BB no_hit = board.get_color(); // same team
+    BB empties = board.get_empties();
 
     if constexpr (type == GENERATE_NOISY) {
-        no_hit |= board.get_empties();
+        no_hit |= empties;
     }
 
     else if constexpr (type == GENERATE_QUIET) {
         no_hit |= board.get_color(!turn); // other team
     }
+    
+    BB moves = 0ULL;
+    while (same_team_pieces) {
+        int from_ = pop_lsb(same_team_pieces);
+        if constexpr (piece == KNIGHT)
+            moves = knight_attacks(bb(from_));
 
-    while (same_team_knights) {
-        int from_ = pop_lsb(same_team_knights);
-        BB moves = knight_attacks(bb(from_)) & ~no_hit;
+        else if constexpr (piece == BISHOP)
+            moves = bishop_attacks(bb(from_), empties);
+
+        else if constexpr (piece == ROOK)
+            moves = rook_attacks(bb(from_), empties);
+
+        else if constexpr (piece == QUEEN)
+            moves = queen_attacks(bb(from_), empties);
+
+        moves &= ~no_hit;
+
         while (moves) {
             movelist.add_move(init_move(from_, pop_lsb(moves), NORMAL_MOVE));
         }
