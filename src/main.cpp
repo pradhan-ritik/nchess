@@ -7,46 +7,34 @@
 #include "movepicker.hpp"
 
 /*
-PAWN MOVE GENERATION FENS
-JUST TEST ALL ARND FEN
-test fens
-white pawn single and double pawn push
-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 0
-
-black pawn single and double pawn push
-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 0
-
-white en pessant
-rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3
-
-black en pessant
-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 0
-
-white promotion
-rnbqkbnr/ppP1p1pp/8/8/8/8/PPPP1P1p/RNBQKBNR w KQkq - 0 6
-
-black promotion
-rnbqkbnr/ppP1p1pp/8/8/8/8/PPPP1P1p/RNBQKBNR n KQkq - 0 6
-
-
-all around fen
+pawn move generation fen
 WHITE:
 n1n4k/1P3p2/1P6/1Pp3p1/5pP1/5P2/P1p5/1N1N3K w - c5 0 1
 BLACK:
 n1n4k/1P3p2/1P6/1Pp3p1/5pP1/5P2/P1p5/1N1N3K b - g4 0 1
-
+Major move generation fen
+WHITE:
+K7/8/1qRnb3/8/8/1QrNB3/8/k7 w - - 0 1
+BLACK:
+K7/8/1qRnb3/8/8/1QrNB3/8/k7 b - - 0 1
 */
 
 int main() {
-    const char* base_fen = "n1n4k/1P3p2/1P6/1Pp3p1/5pP1/5P2/P1p5/1N1N3K w - c5 0 1";
+    const char* base_fen = "K7/8/1qRnb3/8/8/1QrNB3/8/k7 w - - 0 1";
     Board b = Board(base_fen);
     b.display_game();
     Movelist movelist;
 
     generate_pawn_moves<GENERATE_NOISY>(b, movelist);
     generate_pawn_moves<GENERATE_QUIET>(b, movelist);
-    generate_knight_moves<GENERATE_NOISY>(b, movelist);
-    generate_knight_moves<GENERATE_QUIET>(b, movelist);
+    generate_major_piece_moves<GENERATE_NOISY, KNIGHT>(b, movelist);
+    generate_major_piece_moves<GENERATE_QUIET, KNIGHT>(b, movelist);
+    generate_major_piece_moves<GENERATE_NOISY, BISHOP>(b, movelist);
+    generate_major_piece_moves<GENERATE_QUIET, BISHOP>(b, movelist);
+    generate_major_piece_moves<GENERATE_NOISY, ROOK>(b, movelist);
+    generate_major_piece_moves<GENERATE_QUIET, ROOK>(b, movelist);
+    generate_major_piece_moves<GENERATE_NOISY, QUEEN>(b, movelist);
+    generate_major_piece_moves<GENERATE_QUIET, QUEEN>(b, movelist);
 
     movelist.print_moves();
 
