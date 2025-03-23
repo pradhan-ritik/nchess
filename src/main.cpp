@@ -38,13 +38,15 @@ n1n4k/1P3p2/1P6/1Pp3p1/5pP1/5P2/P1p5/1N1N3K b - g4 0 1
 */
 
 int main() {
-    const char* base_fen = "n1n4k/1P3p2/1P6/1Pp3p1/5pP1/5P2/P1p5/1N1N3K b - g4 0 1";
+    const char* base_fen = "n1n4k/1P3p2/1P6/1Pp3p1/5pP1/5P2/P1p5/1N1N3K w - c5 0 1";
     Board b = Board(base_fen);
     b.display_game();
     Movelist movelist;
 
     generate_pawn_moves<GENERATE_NOISY>(b, movelist);
     generate_pawn_moves<GENERATE_QUIET>(b, movelist);
+    generate_knight_moves<GENERATE_NOISY>(b, movelist);
+    generate_knight_moves<GENERATE_QUIET>(b, movelist);
 
     movelist.print_moves();
 
