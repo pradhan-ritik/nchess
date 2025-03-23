@@ -55,4 +55,34 @@ inline bool is_en_pessant(Move move) {
     return (move >> 12) == EN_PESSANT;
 }
 
+inline const char* move_to_uci(Move move) {
+    std::string uci_move = "";
+    uci_move += ((from(move) & 7)^7) + 'a';
+    uci_move += (from(move) / 8) + '1';
+    uci_move += ((to(move) & 7)^7) + 'a';
+    uci_move += (to(move) / 8) + '1';
+
+    if (is_en_pessant(move)) {
+        return uci_move.c_str();
+    }
+
+    if (promotion_piece(move) == QUEEN) {
+        uci_move += 'q';
+    }
+
+    if (promotion_piece(move) == ROOK) {
+        uci_move += 'r';
+    }
+
+    if (promotion_piece(move) == BISHOP) {
+        uci_move += 'b';
+    }
+
+    if (promotion_piece(move) == KNIGHT) {
+        uci_move += 'n';
+    }
+
+    return uci_move.c_str();
+}
+
 #endif // MOVE_HPP
