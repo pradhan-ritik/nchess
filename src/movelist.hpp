@@ -30,6 +30,11 @@ struct Movelist {
         return index+1;
     }
 
+    inline void print_moves() {
+        for (int i = 0; i <= index; i++) {
+            printf("%s\n", move_to_uci(moves[i]));
+        }
+    }
 
 };
 
