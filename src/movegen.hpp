@@ -5,12 +5,6 @@
 #include "move.hpp"
 #include "movelist.hpp"
 
-enum MOVEGEN_TYPE {
-    CAPTURE = 0b1,
-    QUIET = 0b10,
-    ALL = 0b11
-};
-
 // https://www.chessprogramming.org/Kogge-Stone_Algorithm#Occluded_Fill
 inline BB _south_ray(BB pieces_to_move, BB empties) {
     pieces_to_move |= empties & (pieces_to_move >>  8);
@@ -180,36 +174,16 @@ inline BB psuedo_legal_moves_of(BB moves, BB same_team) {
 }
 
 inline void build_normal_moves(Movelist& movelist, BB moves, int from_) {
-    while (moves) 
+    while (moves) {
         movelist.add_move(init_move(from_, pop_lsb(moves), NORMAL_MOVE));
-    
+    }
 }
 
-
-
-// inline void build_normal_pawn_capture_moves(Movelist& movelist, BB pawns, bool turn, BB other_team) {
-//     while (pawns) {
-//         int from_ = pop_lsb(pawns);
-//         build_normal_moves(movelist, pawn_attacks(bb(from_), turn) & other_team, from_);
-//     }
-// }
-
-// inline void build_promotion_moves(Movelist& movelist, BB moves, int from_) {
-//     while (moves) {
-//         int to_ = pop_lsb(moves);
-//         movelist.add_move(init_move(from_, to_, PROMOTION, QUEEN));
-//         movelist.add_move(init_move(from_, to_, PROMOTION, ROOK));
-//         movelist.add_move(init_move(from_, to_, PROMOTION, BISHOP));
-//         movelist.add_move(init_move(from_, to_, PROMOTION, KNIGHT)); 
-//     }
-// }
-
-// inline void bulid_promotion_moves(Movelist& movelist, BB pawns, BB empties, int turn) {
-//     while (pawns) {
-//         int from_ = pop_lsb(pawns);
-//         build_promotion_moves(movelist, (pawn_push(bb(from_), turn) | pawn_attacks(bb(from_), turn)) & empties, from_);        
-//     }
-// }
-
+inline void build_promotion_move(Movelist &movelist, int from_, int to_) {
+    movelist.add_move(init_move(from_, to_, PROMOTION, QUEEN));
+    movelist.add_move(init_move(from_, to_, PROMOTION, ROOK));
+    movelist.add_move(init_move(from_, to_, PROMOTION, BISHOP));
+    movelist.add_move(init_move(from_, to_, PROMOTION, KNIGHT));
+}
 
 #endif // MOVEGEN_HPP
