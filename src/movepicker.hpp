@@ -67,6 +67,28 @@ template <MOVEGEN_STAGE type> inline void generate_pawn_moves(Board& board, Move
     }
 }
 
+template <MOVEGEN_STAGE type> inline void generate_knight_moves(Board& board, Movelist& movelist) {
+    bool turn = board.get_turn();
+    BB same_team_knights = board.get_piece_bb(KNIGHT, turn);
+    BB no_hit = board.get_color(); // same team
+
+    if constexpr (type == GENERATE_NOISY) {
+        no_hit |= board.get_empties();
+    }
+
+    else if constexpr (type == GENERATE_QUIET) {
+        no_hit |= board.get_color(!turn); // other team
+    }
+
+    while (same_team_knights) {
+        int from_ = pop_lsb(same_team_knights);
+        BB moves = knight_attacks(bb(from_)) & ~no_hit;
+        while (moves) {
+            movelist.add_move(init_move(from_, pop_lsb(moves), NORMAL_MOVE));
+        }
+    }
+}
+
 struct Movepicker {
     
 };
