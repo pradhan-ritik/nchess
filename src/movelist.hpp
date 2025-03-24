@@ -18,6 +18,14 @@ struct Movelist {
         index--;
     }
 
+    inline int plus_plus_index() {
+        return ++index;
+    }
+
+    inline void reset_index() {
+        index = -1;
+    }
+
     inline Move get_move_at(int index_) {
         return moves[index_];
     }
@@ -27,7 +35,11 @@ struct Movelist {
     }
  
     inline int get_length() {
-        return index+1;
+        return index + 1;
+    }
+
+    inline int get_index() {
+        return index;
     }
 
     inline void print_moves() {
