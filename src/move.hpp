@@ -11,6 +11,7 @@ enum MOVE_TYPE {
 #define CASTLE_SIDE uint8_t
 #define KINGSIDE 0b01u
 #define QUEENSIDE 0b10u
+#define NULL_MOVE init_move(0, 0, NORMAL_MOVE)
 
 #include "constants.hpp"
 #include "piece.hpp"
