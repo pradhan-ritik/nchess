@@ -67,28 +67,6 @@ template <MOVEGEN_STAGE type> inline void generate_pawn_moves(Board& board, Move
     }
 }
 
-// template <MOVEGEN_STAGE type> inline void generate_knight_moves(Board& board, Movelist& movelist) {
-//     bool turn = board.get_turn();
-//     BB same_team_knights = board.get_piece_bb(KNIGHT, turn);
-//     BB no_hit = board.get_color(); // same team
-
-//     if constexpr (type == GENERATE_NOISY) {
-//         no_hit |= board.get_empties();
-//     }
-
-//     else if constexpr (type == GENERATE_QUIET) {
-//         no_hit |= board.get_color(!turn); // other team
-//     }
-
-//     while (same_team_knights) {
-//         int from_ = pop_lsb(same_team_knights);
-//         BB moves = knight_attacks(bb(from_)) & ~no_hit;
-//         while (moves) {
-//             movelist.add_move(init_move(from_, pop_lsb(moves), NORMAL_MOVE));
-//         }
-//     }
-// }
-
 template <MOVEGEN_STAGE type, PIECE piece> inline void generate_major_piece_moves(Board& board, Movelist& movelist) {
     static_assert(piece != PAWN && piece != KING);
     bool turn = board.get_turn();
@@ -125,6 +103,40 @@ template <MOVEGEN_STAGE type, PIECE piece> inline void generate_major_piece_move
             movelist.add_move(init_move(from_, pop_lsb(moves), NORMAL_MOVE));
         }
     }
+}
+
+template <MOVEGEN_STAGE type> inline void generate_king_moves(Board& board, Movelist& movelist) {
+    bool turn = board.get_turn();
+    BB same_team_king = board.get_piece_bb(KING, turn);
+    BB no_hit = board.get_color(); // same team
+    BB empties = board.get_empties();
+
+    if (type == GENERATE_NOISY) {
+        no_hit |= empties;
+    }
+
+    if (type == GENERATE_QUIET) {
+        no_hit |= board.get_color(!turn); // other team
+    }
+
+    BB moves = king_attacks(same_team_king) & ~no_hit;
+    int from_ = pop_lsb(same_team_king);
+    while (moves) {
+        movelist.add_move(init_move(from_, pop_lsb(moves), NORMAL_MOVE));
+    }
+
+    if (type == GENERATE_QUIET) {
+        int shift = turn * 56;
+        if (board.get_castle(KINGSIDE, turn) && in_BB(empties, (0b110ULL << shift))) {
+            movelist.add_move(init_move(from_, shift + 1, CASTLE));
+        }
+
+        // queenside castle
+        if (board.get_castle(QUEENSIDE, turn) && in_BB(empties, (0b1110000ULL << shift))) {
+            movelist.add_move(init_move(from_, shift + 5, CASTLE));
+        }
+    }
+
 }
 
 struct Movepicker {
