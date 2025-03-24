@@ -17,24 +17,31 @@ WHITE:
 K7/8/1qRnb3/8/8/1QrNB3/8/k7 w - - 0 1
 BLACK:
 K7/8/1qRnb3/8/8/1QrNB3/8/k7 b - - 0 1
+castle fens:
+WHITE:
+r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1
+BLACK:
+r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R b KQkq - 0 1
 */
 
 int main() {
-    const char* base_fen = "K7/8/1qRnb3/8/8/1QrNB3/8/k7 w - - 0 1";
+    const char* base_fen = "rq2k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K1QR w KQkq - 0 1";
     Board b = Board(base_fen);
     b.display_game();
     Movelist movelist;
 
-    generate_pawn_moves<GENERATE_NOISY>(b, movelist);
-    generate_pawn_moves<GENERATE_QUIET>(b, movelist);
-    generate_major_piece_moves<GENERATE_NOISY, KNIGHT>(b, movelist);
-    generate_major_piece_moves<GENERATE_QUIET, KNIGHT>(b, movelist);
-    generate_major_piece_moves<GENERATE_NOISY, BISHOP>(b, movelist);
-    generate_major_piece_moves<GENERATE_QUIET, BISHOP>(b, movelist);
-    generate_major_piece_moves<GENERATE_NOISY, ROOK>(b, movelist);
-    generate_major_piece_moves<GENERATE_QUIET, ROOK>(b, movelist);
-    generate_major_piece_moves<GENERATE_NOISY, QUEEN>(b, movelist);
-    generate_major_piece_moves<GENERATE_QUIET, QUEEN>(b, movelist);
+    // generate_pawn_moves<GENERATE_NOISY>(b, movelist);
+    // generate_pawn_moves<GENERATE_QUIET>(b, movelist);
+    // generate_major_piece_moves<GENERATE_NOISY, KNIGHT>(b, movelist);
+    // generate_major_piece_moves<GENERATE_QUIET, KNIGHT>(b, movelist);
+    // generate_major_piece_moves<GENERATE_NOISY, BISHOP>(b, movelist);
+    // generate_major_piece_moves<GENERATE_QUIET, BISHOP>(b, movelist);
+    // generate_major_piece_moves<GENERATE_NOISY, ROOK>(b, movelist);
+    // generate_major_piece_moves<GENERATE_QUIET, ROOK>(b, movelist);
+    // generate_major_piece_moves<GENERATE_NOISY, QUEEN>(b, movelist);
+    // generate_major_piece_moves<GENERATE_QUIET, QUEEN>(b, movelist);
+    generate_king_moves<GENERATE_NOISY>(b, movelist);
+    generate_king_moves<GENERATE_QUIET>(b, movelist);
 
     movelist.print_moves();
 
