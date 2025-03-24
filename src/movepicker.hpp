@@ -7,10 +7,11 @@
 
 enum MOVEGEN_STAGE {
     GENERATE_NOISY,
-    GENERATE_QUIET
+    GENERATE_QUIET,
+    MOVEGEN_FINISHED
 };
 
-template <MOVEGEN_STAGE type> inline void generate_pawn_moves(Board& board, Movelist& movelist) {
+template <MOVEGEN_STAGE stage> inline int generate_pawn_moves(Board& board, Movelist& movelist) {
     int pawn_direction = board.get_pawn_direction();
     BB promotion_rank = board.get_pawn_promotion_rank();
     bool turn = board.get_turn();
@@ -25,11 +26,11 @@ template <MOVEGEN_STAGE type> inline void generate_pawn_moves(Board& board, Move
     while (promotion_pawns) {
         int from_ = pop_lsb(promotion_pawns);
 
-        if constexpr (type == GENERATE_NOISY) {
+        if constexpr (stage == GENERATE_NOISY) {
             promotion_moves = pawn_attacks(bb(from_), turn) & other_team_pieces;
         }
 
-        else if constexpr (type == GENERATE_QUIET) {
+        else if constexpr (stage == GENERATE_QUIET) {
             promotion_moves = pawn_push(bb(from_), turn) & empties;
         }
 
@@ -39,7 +40,7 @@ template <MOVEGEN_STAGE type> inline void generate_pawn_moves(Board& board, Move
     }
     
     // en pessants
-    if constexpr (type == GENERATE_NOISY) {
+    if constexpr (stage == GENERATE_NOISY) {
         int target = board.get_en_pessant();
         BB en_pessant_pawns = pawn_attacks(bb(target + pawn_direction), !turn) & same_team_pawns;
         // print_BB(en_pessant_pawns);
@@ -49,7 +50,7 @@ template <MOVEGEN_STAGE type> inline void generate_pawn_moves(Board& board, Move
     }
 
     // normal pawn pushes and double pawn pushes
-    if constexpr (type == GENERATE_QUIET) {
+    if constexpr (stage == GENERATE_QUIET) {
         BB non_promotion_pawns = same_team_pawns & ~promotion_rank;
         // doing them all at once since single pawn pushes can not overlap
         BB single_pawn_pushes = pawn_push(non_promotion_pawns, turn) & empties;
@@ -65,20 +66,22 @@ template <MOVEGEN_STAGE type> inline void generate_pawn_moves(Board& board, Move
             movelist.add_move(init_move(to_-pawn_direction-pawn_direction, to_, NORMAL_MOVE));
         }
     }
+
+    return movelist.get_length();
 }
 
-template <MOVEGEN_STAGE type, PIECE piece> inline void generate_major_piece_moves(Board& board, Movelist& movelist) {
+template <MOVEGEN_STAGE stage, PIECE piece> inline void generate_major_piece_moves(Board& board, Movelist& movelist) {
     static_assert(piece != PAWN && piece != KING);
     bool turn = board.get_turn();
     BB same_team_pieces = board.get_piece_bb(piece, turn);
     BB no_hit = board.get_color(); // same team
     BB empties = board.get_empties();
 
-    if constexpr (type == GENERATE_NOISY) {
+    if constexpr (stage == GENERATE_NOISY) {
         no_hit |= empties;
     }
 
-    else if constexpr (type == GENERATE_QUIET) {
+    else if constexpr (stage == GENERATE_QUIET) {
         no_hit |= board.get_color(!turn); // other team
     }
     
@@ -103,19 +106,21 @@ template <MOVEGEN_STAGE type, PIECE piece> inline void generate_major_piece_move
             movelist.add_move(init_move(from_, pop_lsb(moves), NORMAL_MOVE));
         }
     }
+
+    return movelist.get_length();
 }
 
-template <MOVEGEN_STAGE type> inline void generate_king_moves(Board& board, Movelist& movelist) {
+template <MOVEGEN_STAGE stage> inline void generate_king_moves(Board& board, Movelist& movelist) {
     bool turn = board.get_turn();
     BB same_team_king = board.get_piece_bb(KING, turn);
     BB no_hit = board.get_color(); // same team
     BB empties = board.get_empties();
 
-    if (type == GENERATE_NOISY) {
+    if (stage == GENERATE_NOISY) {
         no_hit |= empties;
     }
 
-    if (type == GENERATE_QUIET) {
+    if (stage == GENERATE_QUIET) {
         no_hit |= board.get_color(!turn); // other team
     }
 
@@ -125,7 +130,7 @@ template <MOVEGEN_STAGE type> inline void generate_king_moves(Board& board, Move
         movelist.add_move(init_move(from_, pop_lsb(moves), NORMAL_MOVE));
     }
 
-    if (type == GENERATE_QUIET) {
+    if (stage == GENERATE_QUIET) {
         int shift = turn * 56;
         if (board.get_castle(KINGSIDE, turn) && in_BB(empties, (0b110ULL << shift))) {
             movelist.add_move(init_move(from_, shift + 1, CASTLE));
@@ -137,10 +142,28 @@ template <MOVEGEN_STAGE type> inline void generate_king_moves(Board& board, Move
         }
     }
 
+    return movelist.get_length();
+}
+
+template <MOVEGEN_STAGE stage> inline int generate_moves(Board& board, Movelist& movelist) {
+    generate_pawn_moves<stage>(board, movelist);
+    generate_major_piece_moves<stage, KNIGHT>(board, movelist);
+    generate_major_piece_moves<stage, BISHOP>(board, movelist);
+    generate_major_piece_moves<stage, ROOK>(board, movelist);
+    generate_major_piece_moves<stage, QUEEN>(board, movelist);
+    generate_king_moves<stage>(board, movelist);
+    return movelist.get_length();
 }
 
 struct Movepicker {
-    
+    private:
+    Board* board;
+    Movelist movelist;
+    int movelist_length;
+    int stage;
+
+    Movepicker(Board* board);
+    Move next_move();
 };
 
 
