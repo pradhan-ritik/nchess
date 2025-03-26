@@ -70,7 +70,7 @@ template <MOVEGEN_STAGE stage> inline int generate_pawn_moves(Board& board, Move
     return movelist.get_length();
 }
 
-template <MOVEGEN_STAGE stage, PIECE piece> inline void generate_major_piece_moves(Board& board, Movelist& movelist) {
+template <MOVEGEN_STAGE stage, PIECE piece> inline int generate_major_piece_moves(Board& board, Movelist& movelist) {
     static_assert(piece != PAWN && piece != KING);
     bool turn = board.get_turn();
     BB same_team_pieces = board.get_piece_bb(piece, turn);
@@ -110,7 +110,7 @@ template <MOVEGEN_STAGE stage, PIECE piece> inline void generate_major_piece_mov
     return movelist.get_length();
 }
 
-template <MOVEGEN_STAGE stage> inline void generate_king_moves(Board& board, Movelist& movelist) {
+template <MOVEGEN_STAGE stage> inline int generate_king_moves(Board& board, Movelist& movelist) {
     bool turn = board.get_turn();
     BB same_team_king = board.get_piece_bb(KING, turn);
     BB no_hit = board.get_color(); // same team
@@ -162,6 +162,7 @@ struct Movepicker {
     int movelist_length;
     int stage;
 
+    public:
     Movepicker(Board* board);
     Move next_move();
 };
