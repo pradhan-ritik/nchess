@@ -45,7 +45,8 @@ struct Board {
     }
 
     public:
-    Board(const char *fen);
+    Board(const char* fen);
+    void set_game(const char* fen);
     void display_game(bool show_bitboards=false);
     bool play_move(Move move); // returns true if the move was legal
     void undo_last_move();
@@ -202,13 +203,13 @@ struct Board {
     }
 
     inline BB king_attackers() {
-        return square_attackers(get_piece_bb(KING, turn));
+        return square_attackers(lsb(get_piece_bb(KING, turn)));
     }
 
     // get the last player's king position and see if it is attacked
     inline bool was_move_legal() {
         next_turn();
-        bool was_legal = king_attackers();
+        bool was_legal = !king_attackers();
         next_turn();
         return was_legal;
     }
