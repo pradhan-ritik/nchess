@@ -382,7 +382,8 @@ void Board::_undo_normal_move(Move move, PIECE captured) {
     int to_ = to(move);
     _undo_set_piece_on_pos(get_piece_on_pos(to_), from_, turn);
     clear_pos(to_);
-    _undo_set_piece_on_pos(captured, to_, other_turn());
+    if (captured)
+        _undo_set_piece_on_pos(captured, to_, other_turn());
 } 
 
 void Board::_undo_promotion(Move move, PIECE captured) {
@@ -390,7 +391,8 @@ void Board::_undo_promotion(Move move, PIECE captured) {
     int to_ = to(move);
     clear_pos(to_);
     _undo_set_piece_on_pos(PAWN, from_, turn);
-    _undo_set_piece_on_pos(captured, to_, other_turn());
+    if (captured)
+        _undo_set_piece_on_pos(captured, to_, other_turn());
 }
 
 void Board::_undo_en_pessant(Move move) {
