@@ -26,6 +26,7 @@ void Interface::run() {
 }
 
 void Interface::run_command(std::string& args) {
+    
     std::vector<std::string> args_vector = tokenize(args, ' ');
     int length = args.size();
 
@@ -45,7 +46,9 @@ void Interface::run_command(std::string& args) {
 
 void Interface::position(std::vector<std::string>& args_vector, int length) {
     if (args_vector[1] == "fen") {
-        board->set_game(args_vector[2].c_str());
+        // printf("fen: %s", std::accumulate(args_vector.begin()+2, args_vector.end(), std::string(""), [](std::string& a, std::string &b) {return a + " " + b;}).c_str());
+        board->set_game(std::accumulate(args_vector.begin()+2, args_vector.end(), std::string(""), [](std::string& a, std::string &b) {return a + " " + b;}).c_str());
+        board->display_game();
     }
 }
 

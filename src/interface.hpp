@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <numeric>
 #include "constants.hpp"
 #include "board.hpp"
 #include "perft.hpp"
