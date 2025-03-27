@@ -35,19 +35,17 @@ BB perft_divide(Board& board, int depth) {
     
     Move move;
     while ((move = mp.next_move()) != NULL_MOVE) {
-        if (depth != 1) {
-            board.play_move(move);
-            if (board.was_move_legal()) {
+        board.play_move(move);
+        if (board.was_move_legal()) {
+            if (depth == 1)
+                nodes_here = 1;
+            else
                 nodes_here = perft(board, depth - 1);
-            }
-
+        
             nodes += nodes_here;
-
             printf("%s: %llu\n", move_to_uci(move), nodes_here);
-
-            board.undo_last_move();
         }
-        else nodes++;
+        board.undo_last_move();
     }
 
     return nodes;
