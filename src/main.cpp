@@ -26,40 +26,29 @@ r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R b KQkq - 0 1
 */
 
 int main() {
+    // INTERFACE MODE
     const char* base_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     Board b = Board(base_fen);
     Interface i = Interface(&b);
     i.run();
+    // INTERFACE MODE
+
+    // const char* fen = "r6r/1b2k1bq/8/8/7B/8/8/R3K2R b KQ - 3 2";
+    // Board b = Board(fen);
+    // print_BB(b.get_color(b.get_turn()));
+    // print_BB(b.get_color(b.other_turn()));
+    // printf("---------------------");
+    // b.play_move(init_move(g7, b2, NORMAL_MOVE));
+    // print_BB(b.get_color(b.get_turn()));
+    // print_BB(b.get_color(b.other_turn()));
+    // printf("---------------------");
+    // b.undo_last_move();
+    // print_BB(b.get_color(b.get_turn()));
+    // print_BB(b.get_color(b.other_turn()));
     // b.display_game();
-    // Movelist movelist;
-    // generate_moves<GENERATE_QUIET>(b, movelist);
-    // movelist.print_moves();
-
-
-    // generate_pawn_moves<GENERATE_NOISY>(b, movelist);
-    // generate_pawn_moves<GENERATE_QUIET>(b, movelist);
-    // generate_major_piece_moves<GENERATE_NOISY, KNIGHT>(b, movelist);
-    // generate_major_piece_moves<GENERATE_QUIET, KNIGHT>(b, movelist);
-    // generate_major_piece_moves<GENERATE_NOISY, BISHOP>(b, movelist);
-    // generate_major_piece_moves<GENERATE_QUIET, BISHOP>(b, movelist);
-    // generate_major_piece_moves<GENERATE_NOISY, ROOK>(b, movelist);
-    // generate_major_piece_moves<GENERATE_QUIET, ROOK>(b, movelist);
-    // generate_major_piece_moves<GENERATE_NOISY, QUEEN>(b, movelist);
-    // generate_major_piece_moves<GENERATE_QUIET, QUEEN>(b, movelist);
-    // generate_king_moves<GENERATE_NOISY>(b, movelist);
-    // generate_king_moves<GENERATE_QUIET>(b, movelist);
-
-    // movelist.print_moves();
-    // printf("%i\n", perft(b, 3));
-
-    // printf("%s", move_to_uci(init_move(h7, h8, PROMOTION, QUEEN)));
-    // 0.4 with optimizations
-    // for (int i = 0; i < 10000000; i++)
-    //     is_move_legal_copying(b, init_move(e2, c4, NORMAL_MOVE));
-
-    // 0.17 with optimizations
-    // for (int i = 0; i < 100000000; i++)
-    //     b.is_move_legal(init_move(e2, c4, NORMAL_MOVE));
+    // b.display_game();
+    // print_BB(b.was_move_legal());
+    // perft_info(b, 3);
 
     return 0;
 }
