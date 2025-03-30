@@ -98,6 +98,7 @@ Board::Board(const char* fen) {
 }
 
 void Board::set_game(const char* fen) {
+    fen++;
     history_pointer = 0;
     for (int i = 0; i < 256; i++) {
         history[i] = EMPTY_HISTORY;
