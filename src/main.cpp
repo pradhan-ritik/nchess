@@ -39,7 +39,7 @@ int main() {
 
     const char* fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     Board b = Board(fen);
-    printf("EVALUATION: %i\n", evaluate(b));
+    // printf("EVALUATION: %i\n", evaluate(b));
     // b.set_game(fen);
     // b.play_move(init_move(d2, d3, NORMAL_MOVE));
     // b.undo_last_move();
@@ -60,7 +60,7 @@ int main() {
     // b.display_game();
     // b.display_game();
     // print_BB(b.was_move_legal());
-    // perft_info(b, 6);
+    perft_info(b, 6);
 
     return 0;
 }

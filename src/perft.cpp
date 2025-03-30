@@ -44,7 +44,7 @@ BB perft_divide(Board& board, int depth) {
               nodes_here = perft(board, depth - 1);
         
             nodes += nodes_here;
-            printf("%s: %llu\n", move_to_uci(move), nodes_here);
+            printf("%s: %lu\n", move_to_uci(move), nodes_here);
         }
 
         board.undo_last_move();
@@ -53,6 +53,6 @@ BB perft_divide(Board& board, int depth) {
     return nodes;
 }
 
-BB perft_info(Board& board, int depth) {
-    printf("\nNodes searched: %llu\n", perft_divide(board, depth));
+void perft_info(Board& board, int depth) {
+    printf("\nNodes searched: %lu\n", perft_divide(board, depth));
 }

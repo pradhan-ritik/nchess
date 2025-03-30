@@ -43,4 +43,6 @@ Move Movepicker::next_move() {
         case MOVEGEN_FINISHED:
             return NULL_MOVE;
     }
+    
+    return NULL_MOVE;
 }

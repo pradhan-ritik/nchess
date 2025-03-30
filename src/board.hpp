@@ -188,7 +188,7 @@ struct Board {
 
     inline BB square_attackers(BB pos) {
         BB empties = get_empties();
-        BB same_team = get_color();
+        // BB same_team = get_color();
         bool other_team = other_turn();
         BB other_team_queens = get_piece_bb(QUEEN, other_team);
         return ((other_team_queens | get_piece_bb(BISHOP, other_team)) & bishop_attacks(pos, empties)) |

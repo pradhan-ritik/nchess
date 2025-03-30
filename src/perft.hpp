@@ -7,7 +7,7 @@
 #include "movepicker.hpp"
 
 BB perft(Board& board, int depth);
-BB perft_info(Board& board, int depth);
+void perft_info(Board& board, int depth);
 
 
 
