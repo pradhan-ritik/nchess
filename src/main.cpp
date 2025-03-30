@@ -23,19 +23,28 @@ WHITE:
 r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1
 BLACK:
 r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R b KQkq - 0 1
+
+8/8/8/2k5/2pP4/8/B7/4K3 b - d3 0 3
 */
 
 int main() {
     // INTERFACE MODE
-    const char* base_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    Board b = Board(base_fen);
-    Interface i = Interface(&b);
-    i.run();
+    // const char* base_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    // Board b = Board(base_fen);
+    // Interface i = Interface(&b);
+    // i.run();
     // INTERFACE MODE
 
-    // const char* fen = "r6r/1b2k1bq/8/8/7B/8/8/R3K2R b KQ - 3 2";
-    // Board b = Board(fen);
-    // print_BB(b.get_color(b.get_turn()));
+    const char* fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    Board b = Board(fen);
+    // b.set_game(fen);
+    // b.play_move(init_move(d2, d3, NORMAL_MOVE));
+    // b.undo_last_move();
+    // b.play_move(init_move(a2, a3, NORMAL_MOVE));
+    // b.display_game();
+    // print_BB(b.get_color());
+    // print_BB(b.get_color(b.other_turn()));
+
     // print_BB(b.get_color(b.other_turn()));
     // printf("---------------------");
     // b.play_move(init_move(g7, b2, NORMAL_MOVE));
@@ -48,7 +57,7 @@ int main() {
     // b.display_game();
     // b.display_game();
     // print_BB(b.was_move_legal());
-    // perft_info(b, 3);
+    perft_info(b, 6);
 
     return 0;
 }
