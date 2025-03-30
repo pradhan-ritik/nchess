@@ -40,6 +40,9 @@ def find_inaccuracies(engine_1: Popen, engine_2: Popen, board: chess.Board, dept
         engine_1_output = parse_output(engine_1_output)
         engine_2_output = parse_output(engine_2_output)
         wrong = engine_1_output - engine_2_output
+        if not wrong:
+            board.pop()
+            continue
         if depth == 1:
             inaccuracies.append((fen, engine_2_output, wrong, len(engine_1_output)))
         else:
@@ -83,9 +86,9 @@ if __name__ == "__main__":
     with open("test_suite.txt", "r") as fh:
         test_suite = fh.read()
         test_suite = test_suite.split("\n")
-        test_suite = [tuple(line.split(";")) for line in test_suite if not line.startswith("#")]
+        test_suite = [tuple(line.split(";")) for line in test_suite if not line.startswith("#") and line]
+        print(test_suite)
         test_suite = [(fen, int(depth), int(nodes)) for fen, depth, nodes in test_suite]
-
     # print(test_suite)
     inaccuracies = compare_engines(Engine_1, Engine_2, test_suite)
     print("started writing")
@@ -93,7 +96,7 @@ if __name__ == "__main__":
         for inaccuracy in inaccuracies:
             fen, predicted, wrong_moves, correct_nodes = inaccuracy
             predicted = " ".join(predicted)
-            wrong_moves = " ".join(wrong_moves)
+            # wrong_moves = " ".join(wrong_moves)
             fh.write(f"{fen}\n{predicted}\n{wrong_moves} | Correct Nodes {correct_nodes}\n")
 
     print("done")
