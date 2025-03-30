@@ -97,6 +97,105 @@ Board::Board(const char* fen) {
     } 
 }
 
+void Board::set_game(const char* fen, bool from_interface) {
+    fen += from_interface;
+    history_pointer = 0;
+    for (int i = 0; i < 256; i++) {
+        history[i] = EMPTY_HISTORY;
+    }
+
+    for (int i = 0; i < 64; i++) 
+        board_array[i] = EMPTY;
+    
+    for (int i = 0; i < 7; i++) 
+        pieces[i] = 0ULL;
+
+    for (int i = 0; i < 2; i++) 
+        colors[i] = 0ULL;
+
+
+    turn = false;
+    rules = 0u;
+
+    int pos = 0;
+    int slash_count = 0;
+    char cur;
+    bool white_piece;
+    bool running = true;
+    while (running) {
+        cur = *(fen++);
+        white_piece = std::isupper(cur);
+        printf("POS: %i PIECE %c\n", pos, cur);
+        cur = std::tolower(cur);
+        switch (cur) {
+            case 'p':
+                if (white_piece) set_piece_on_pos(PAWN, pos^63);
+                else set_opposite_color_piece_on_pos(PAWN, pos^63);
+                break;
+
+            case 'n':
+                if (white_piece) set_piece_on_pos(KNIGHT, pos^63);
+                else set_opposite_color_piece_on_pos(KNIGHT, pos^63);
+                break;
+
+            case 'b':
+                if (white_piece) set_piece_on_pos(BISHOP, pos^63);
+                else set_opposite_color_piece_on_pos(BISHOP, pos^63);
+                break;
+
+            case 'r':
+                if (white_piece) set_piece_on_pos(ROOK, pos^63);
+                else set_opposite_color_piece_on_pos(ROOK, pos^63);
+                break;
+
+            case 'q':
+                if (white_piece) set_piece_on_pos(QUEEN, pos^63);
+                else set_opposite_color_piece_on_pos(QUEEN, pos^63);
+                break;
+
+            case 'k':
+                if (white_piece) set_piece_on_pos(KING, pos^63);
+                else set_opposite_color_piece_on_pos(KING, pos^63);
+                break;
+
+            case ' ':
+                running = false;
+                break;
+
+            case '/':
+                pos = ++slash_count*8 - 1;
+                break;
+
+            default: // number
+                pos += cur - 1 - '0';
+                break;
+        }
+
+        pos++;
+    }
+
+    turn = *(fen++) - 'w';
+
+    if (*(++fen) == '-') {
+        fen += 2;
+    }
+
+    else {
+        while (true) {
+            cur = *(fen++);
+            if (cur == 'K') set_castle(KINGSIDE, WHITE);
+            if (cur == 'Q') set_castle(QUEENSIDE, WHITE);
+            if (cur == 'k') set_castle(KINGSIDE, BLACK);
+            if (cur == 'q') set_castle(QUEENSIDE, BLACK);
+            if (cur == ' ') break;
+        }
+    }
+
+    if (*fen != '-') {
+        set_en_pessant(((*fen - 'a')^7) + ((*(++fen)-'0'-1)*8));
+    } 
+}
+
 void Board::display_game(bool show_bitboards) {
     PIECE piece;
     char cur;
@@ -223,7 +322,7 @@ int Board::_play_normal_move(Move move) {
     }
 
     else if (piece == PAWN && abs(from_ - to_) == 16) {
-        return to_; // en pessant
+        return to_ - get_pawn_direction(); // en pessant
     }
 
 
@@ -285,7 +384,8 @@ void Board::_undo_normal_move(Move move, PIECE captured) {
     int to_ = to(move);
     _undo_set_piece_on_pos(get_piece_on_pos(to_), from_, turn);
     clear_pos(to_);
-    _undo_set_piece_on_pos(captured, to_, other_turn());
+    if (captured)
+        _undo_set_piece_on_pos(captured, to_, other_turn());
 } 
 
 void Board::_undo_promotion(Move move, PIECE captured) {
@@ -293,7 +393,8 @@ void Board::_undo_promotion(Move move, PIECE captured) {
     int to_ = to(move);
     clear_pos(to_);
     _undo_set_piece_on_pos(PAWN, from_, turn);
-    _undo_set_piece_on_pos(captured, to_, other_turn());
+    if (captured)
+        _undo_set_piece_on_pos(captured, to_, other_turn());
 }
 
 void Board::_undo_en_pessant(Move move) {

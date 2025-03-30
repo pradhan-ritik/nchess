@@ -2,6 +2,7 @@
 #define MOVEGEN_HPP
 
 #include "constants.hpp"
+#include "bit_operations.hpp"
 #include "move.hpp"
 #include "movelist.hpp"
 

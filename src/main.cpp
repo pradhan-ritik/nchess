@@ -5,57 +5,59 @@
 #include "movegen.hpp"
 #include "board.hpp"
 #include "movepicker.hpp"
-
+#include "perft.hpp"
+#include "interface.hpp"
 /*
-PAWN MOVE GENERATION FENS
-JUST TEST ALL ARND FEN
-test fens
-white pawn single and double pawn push
-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 0
-
-black pawn single and double pawn push
-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 0
-
-white en pessant
-rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3
-
-black en pessant
-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 0
-
-white promotion
-rnbqkbnr/ppP1p1pp/8/8/8/8/PPPP1P1p/RNBQKBNR w KQkq - 0 6
-
-black promotion
-rnbqkbnr/ppP1p1pp/8/8/8/8/PPPP1P1p/RNBQKBNR n KQkq - 0 6
-
-
-all around fen
+pawn move generation fen
 WHITE:
 n1n4k/1P3p2/1P6/1Pp3p1/5pP1/5P2/P1p5/1N1N3K w - c5 0 1
 BLACK:
 n1n4k/1P3p2/1P6/1Pp3p1/5pP1/5P2/P1p5/1N1N3K b - g4 0 1
+Major move generation fen
+WHITE:
+K7/8/1qRnb3/8/8/1QrNB3/8/k7 w - - 0 1
+BLACK:
+K7/8/1qRnb3/8/8/1QrNB3/8/k7 b - - 0 1
+castle fens:
+WHITE:
+r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1
+BLACK:
+r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R b KQkq - 0 1
 
+8/8/8/2k5/2pP4/8/B7/4K3 b - d3 0 3
 */
 
 int main() {
-    const char* base_fen = "n1n4k/1P3p2/1P6/1Pp3p1/5pP1/5P2/P1p5/1N1N3K b - g4 0 1";
-    Board b = Board(base_fen);
-    b.display_game();
-    Movelist movelist;
+    // INTERFACE MODE
+    // const char* base_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    // Board b = Board(base_fen);
+    // Interface i = Interface(&b);
+    // i.run();
+    // INTERFACE MODE
 
-    generate_pawn_moves<GENERATE_NOISY>(b, movelist);
-    generate_pawn_moves<GENERATE_QUIET>(b, movelist);
+    const char* fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    Board b = Board(fen);
+    // b.set_game(fen);
+    // b.play_move(init_move(d2, d3, NORMAL_MOVE));
+    // b.undo_last_move();
+    // b.play_move(init_move(a2, a3, NORMAL_MOVE));
+    // b.display_game();
+    // print_BB(b.get_color());
+    // print_BB(b.get_color(b.other_turn()));
 
-    movelist.print_moves();
-
-    // printf("%s", move_to_uci(init_move(h7, h8, PROMOTION, QUEEN)));
-    // 0.4 with optimizations
-    // for (int i = 0; i < 10000000; i++)
-    //     is_move_legal_copying(b, init_move(e2, c4, NORMAL_MOVE));
-
-    // 0.17 with optimizations
-    // for (int i = 0; i < 100000000; i++)
-    //     b.is_move_legal(init_move(e2, c4, NORMAL_MOVE));
+    // print_BB(b.get_color(b.other_turn()));
+    // printf("---------------------");
+    // b.play_move(init_move(g7, b2, NORMAL_MOVE));
+    // print_BB(b.get_color(b.get_turn()));
+    // print_BB(b.get_color(b.other_turn()));
+    // printf("---------------------");
+    // b.undo_last_move();
+    // print_BB(b.get_color(b.get_turn()));
+    // print_BB(b.get_color(b.other_turn()));
+    // b.display_game();
+    // b.display_game();
+    // print_BB(b.was_move_legal());
+    perft_info(b, 6);
 
     return 0;
 }

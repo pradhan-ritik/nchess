@@ -53,6 +53,10 @@ inline void toggle_bit(BB& bitboard, int index) {
     bitboard ^= bb(index);
 }
 
+inline bool in_BB(BB bb1, BB bb2) {
+    return (bb1 & bb2) == bb2;
+} 
+
 inline BB get_bit(BB bitboard, int index) {
     return bitboard & bb(index);
 }
