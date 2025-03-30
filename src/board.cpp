@@ -97,8 +97,8 @@ Board::Board(const char* fen) {
     } 
 }
 
-void Board::set_game(const char* fen) {
-    fen++;
+void Board::set_game(const char* fen, bool from_interface) {
+    fen += from_interface;
     history_pointer = 0;
     for (int i = 0; i < 256; i++) {
         history[i] = EMPTY_HISTORY;
@@ -125,6 +125,7 @@ void Board::set_game(const char* fen) {
     while (running) {
         cur = *(fen++);
         white_piece = std::isupper(cur);
+        printf("POS: %i PIECE %c\n", pos, cur);
         cur = std::tolower(cur);
         switch (cur) {
             case 'p':
@@ -321,7 +322,7 @@ int Board::_play_normal_move(Move move) {
     }
 
     else if (piece == PAWN && abs(from_ - to_) == 16) {
-        return to_; // en pessant
+        return to_ - get_pawn_direction(); // en pessant
     }
 
 
