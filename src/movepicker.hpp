@@ -38,20 +38,34 @@ template <MOVEGEN_STAGE stage> inline int generate_pawn_moves(Board& board, Move
             build_promotion_move(movelist, from_, pop_lsb(promotion_moves));
         } 
     }
-    
+
+    // pawn normal captures
+    BB non_promotion_pawns = same_team_pawns & ~promotion_rank;
+    if constexpr (stage == GENERATE_NOISY) {
+        // Realized that there is no need to make a copy because the stage can never be both at the same time 
+        // BB copy_non_promotion_pawns = non_promotion_pawns;
+        while (non_promotion_pawns) {
+            int from_ = pop_lsb(non_promotion_pawns);
+            BB attacks = pawn_attacks(bb(from_), turn) & other_team_pieces;
+            while (attacks) {
+                int to_ = pop_lsb(attacks);
+                movelist.add_move(init_move(from_, to_, NORMAL_MOVE));
+            }
+        }
+    }
     // en pessants
     if constexpr (stage == GENERATE_NOISY) {
         int target = board.get_en_pessant();
-        BB en_pessant_pawns = pawn_attacks(bb(target + pawn_direction), !turn) & same_team_pawns;
+        // printf("TARGET %i\n", target);
+        BB en_pessant_pawns = pawn_attacks(bb(target), !turn) & same_team_pawns;
         // print_BB(en_pessant_pawns);
         while (en_pessant_pawns) {
-            movelist.add_move(init_move(pop_lsb(en_pessant_pawns), target + pawn_direction, EN_PESSANT));
+            movelist.add_move(init_move(pop_lsb(en_pessant_pawns), target, EN_PESSANT));
         }
     }
 
     // normal pawn pushes and double pawn pushes
     if constexpr (stage == GENERATE_QUIET) {
-        BB non_promotion_pawns = same_team_pawns & ~promotion_rank;
         // doing them all at once since single pawn pushes can not overlap
         BB single_pawn_pushes = pawn_push(non_promotion_pawns, turn) & empties;
         BB double_pawn_pushes = pawn_push(single_pawn_pushes & board.get_third_pawn_rank(), turn) & empties;
@@ -130,7 +144,7 @@ template <MOVEGEN_STAGE stage> inline int generate_king_moves(Board& board, Move
         movelist.add_move(init_move(from_, pop_lsb(moves), NORMAL_MOVE));
     }
 
-    if (stage == GENERATE_QUIET) {
+    if (stage == GENERATE_QUIET && !board.king_attackers()) {
         int shift = turn * 56;
         if (board.get_castle(KINGSIDE, turn) && in_BB(empties, (0b110ULL << shift))) {
             movelist.add_move(init_move(from_, shift + 1, CASTLE));
