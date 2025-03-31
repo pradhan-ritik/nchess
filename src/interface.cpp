@@ -12,8 +12,9 @@ std::vector<std::string> tokenize(std::string& s, char del) {
     return result;
 }
 
-Interface::Interface(Board* board) {
+Interface::Interface(Board* board, Searcher* searcher) {
     this->board = board;
+    this->searcher = searcher;
     this->running = false;
 }
 
@@ -42,6 +43,22 @@ void Interface::run_command(std::string& args) {
         go(args_vector, length);
     }
 
+    else if (args_vector[0] == "uci") {
+        printf("uciok\n");
+    }
+
+    else if (args_vector[0] == "ucinewgame") {
+        board->set_game("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", false);
+    }
+
+    else if (args_vector[0] == "isready") {
+        printf("readyok\n");
+    }
+
+    else if (args_vector[0] == "eval") {
+        printf("Eval: %i", evaluate(*board));
+    }
+
 }
 
 void Interface::position(std::vector<std::string>& args_vector, int length) {
@@ -56,4 +73,10 @@ void Interface::go(std::vector<std::string>& args_vector, int length) {
     if (args_vector[1] == "perft") {
         perft_info(*board, std::stoi(args_vector[2]));
     }
+
+    else if (args_vector[1] == "depth") {
+        searcher->start_search(*board, std::stoi(args_vector[2]));
+        printf("bestmove %s\n", move_to_uci(searcher->best_move)); // implement ponder (eventually)
+    }
+
 }
