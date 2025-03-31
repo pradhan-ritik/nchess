@@ -8,6 +8,7 @@
 #include "perft.hpp"
 #include "interface.hpp"
 #include "evaluation.hpp"
+#include "search.hpp"
 
 /*
 pawn move generation fen
@@ -31,15 +32,20 @@ r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R b KQkq - 0 1
 
 int main() {
     // INTERFACE MODE
-    // const char* base_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    // Board b = Board(base_fen);
-    // Interface i = Interface(&b);
-    // i.run();
+    const char* base_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    Board b = Board(base_fen);
+    Searcher s; 
+    Interface i = Interface(&b, &s);
+    i.run();
     // INTERFACE MODE
 
-    const char* fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    Board b = Board(fen);
-    // printf("EVALUATION: %i\n", evaluate(b));
+    // const char* fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    // Board b = Board(fen);
+    // Searcher s;
+    // Searcher *s2 = &s;
+    // int evaluation = s2->start_search(b, 3);
+    // printf("bestmove %s eval %i\n", move_to_uci(s2->best_move), evaluation);
+    // printf("EVALU;ATION: %i\n", evaluate(b));
     // b.set_game(fen);
     // b.play_move(init_move(d2, d3, NORMAL_MOVE));
     // b.undo_last_move();
@@ -60,7 +66,7 @@ int main() {
     // b.display_game();
     // b.display_game();
     // print_BB(b.was_move_legal());
-    perft_info(b, 6);
+    // perft_info(b, 6);
 
     return 0;
 }
