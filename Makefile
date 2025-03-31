@@ -3,3 +3,6 @@ default:
 
 performance:
 	g++ -o nchess src/*.cpp -O3
+
+debug:
+	g++ -g src/*.cpp -Wall -Wextra
