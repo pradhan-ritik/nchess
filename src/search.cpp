@@ -1,6 +1,17 @@
 #include "search.hpp"
 
 int Searcher::search(Board &board, int depth, int alpha, int beta) {
+    alpha = std::max(alpha, NEGINF + (starting_depth - depth));
+    beta = std::min(beta, INF - (starting_depth - depth));
+
+    if (alpha >= beta) { // mate has been found earlier in the search
+        return alpha;
+    }
+
+    if (current_time() > search_limit) {
+        return 0;
+    }
+
     if (depth == 0) {
         return evaluate(board) * -((board.get_turn())*2 - 1);
     }
@@ -15,11 +26,6 @@ int Searcher::search(Board &board, int depth, int alpha, int beta) {
             board.undo_last_move();
             continue;
         }
-        // printf("HERE depth %i move %s\n", depth, move_to_uci(move));
-        // board.next_turn();
-        // print_BB(board.king_attackers());
-        // board.display_game(true);
-        // board.next_turn();
     
         generated_moves = true;
         int evaluation = -search(board, depth - 1, -beta, -alpha);
@@ -37,6 +43,10 @@ int Searcher::search(Board &board, int depth, int alpha, int beta) {
         if (evaluation >= beta) {
             return beta;
         }
+
+        if (current_time() > search_limit) {
+            return 0;
+        }
     }
 
     if (!generated_moves) {
@@ -50,8 +60,21 @@ int Searcher::search(Board &board, int depth, int alpha, int beta) {
     return best_eval_this_depth;
 }
 
-int Searcher::start_search(Board &board, int depth) {
-    starting_depth = depth;
-    int evaluation = search(board, depth, NEGINF, INF);
-    return evaluation;
+int Searcher::start_search(Board &board, int max_time, int max_depth) {
+    search_limit = current_time() + max_time; 
+
+    // we do this so even if there is no time, there will stil be something to play
+    search(board, 1, NEGINF, INF);
+
+    for (int i = 2; i <= max_depth; i++) {
+        starting_depth = i;
+        search(board, i, NEGINF, INF);
+
+        if (current_time() > search_limit) {
+            break;
+        }
+    }
+
+    return best_eval;
 } 
+
