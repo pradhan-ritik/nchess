@@ -67,6 +67,10 @@ void Interface::position(std::vector<std::string>& args_vector, int length) {
         board->set_game(std::accumulate(args_vector.begin()+2, args_vector.end(), std::string(""), [](std::string& a, std::string &b) {return a + " " + b;}).c_str());
         // board->display_game();
     }
+
+    if (args_vector[1] == "display") {
+        board->display_game();
+    }
 }
 
 void Interface::go(std::vector<std::string>& args_vector, int length) {
