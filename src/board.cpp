@@ -125,7 +125,6 @@ void Board::set_game(const char* fen, bool from_interface) {
     while (running) {
         cur = *(fen++);
         white_piece = std::isupper(cur);
-        printf("POS: %i PIECE %c\n", pos, cur);
         cur = std::tolower(cur);
         switch (cur) {
             case 'p':
