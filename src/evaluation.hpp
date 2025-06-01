@@ -13,7 +13,7 @@ enum {
   BISHOP_VALUE = 330,
   ROOK_VALUE = 500,
   QUEEN_VALUE = 900,
-  KING_VALUE = 20000
+  KING_VALUE = 0
 };
 
 inline int PAWN_PST[64] = { 
