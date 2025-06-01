@@ -80,7 +80,7 @@ void Interface::go(std::vector<std::string>& args_vector, int length) {
 
     else if (args_vector[1] == "depth") {
         searcher->start_search(*board, 1000000000, std::stoi(args_vector[2]));
-        printf("bestmove %s\n", move_to_uci(searcher->best_move)); // implement ponder (eventually)
+        printf("bestmove %s\n", move_to_uci(searcher->best_move).c_str()); // implement ponder (eventually)
     }
 
 }

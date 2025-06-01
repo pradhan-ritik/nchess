@@ -56,7 +56,7 @@ inline bool is_en_pessant(Move move) {
     return (move >> 12) == EN_PESSANT;
 }
 
-inline const char* move_to_uci(Move move) {
+inline std::string move_to_uci(Move move) {
     std::string uci_move = "";
     uci_move += ((from(move) & 7)^7) + 'a';
     uci_move += (from(move) / 8) + '1';
