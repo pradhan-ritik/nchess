@@ -29,7 +29,7 @@ void Interface::run() {
 void Interface::run_command(std::string& args) {
     
     std::vector<std::string> args_vector = tokenize(args, ' ');
-    int length = args.size();
+    int length = args_vector.size();
 
     if (args_vector[0] == "quit") {
         running = false;
@@ -56,16 +56,29 @@ void Interface::run_command(std::string& args) {
     }
 
     else if (args_vector[0] == "eval") {
-        printf("Eval: %i", evaluate(*board));
+        printf("Eval: %i\n", evaluate(*board));
     }
 
 }
 
 void Interface::position(std::vector<std::string>& args_vector, int length) {
+    int moves_pos = 0;
     if (args_vector[1] == "fen") {
+        moves_pos = 8;
         // printf("fen: %s", std::accumulate(args_vector.begin()+2, args_vector.end(), std::string(""), [](std::string& a, std::string &b) {return a + " " + b;}).c_str());
         board->set_game(std::accumulate(args_vector.begin()+2, args_vector.end(), std::string(""), [](std::string& a, std::string &b) {return a + " " + b;}).c_str());
         // board->display_game();
+    }
+
+    if (moves_pos || args_vector[1] == "startpos") {
+        if (!moves_pos) {
+            board->set_game("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", false);        
+            moves_pos = 2;
+        }
+
+        for (int i = moves_pos; i < length; i++) {
+            board->play_move(uci_to_move(args_vector[i], *board));
+        }
     }
 
     if (args_vector[1] == "display") {
