@@ -63,12 +63,15 @@ int Searcher::search(Board &board, int depth, int alpha, int beta) {
 int Searcher::start_search(Board &board, int max_time, int max_depth) {
     search_limit = current_time() + max_time; 
 
-    // we do this so even if there is no time, there will stil be something to play
+    // Even if there is no time, there will stil be something to play
+    starting_depth = 1;
     search(board, 1, NEGINF, INF);
+    printf("depth 1 pv %s eval %i\n", move_to_uci(best_move).c_str(), best_eval);
 
     for (int i = 2; i <= max_depth; i++) {
         starting_depth = i;
         search(board, i, NEGINF, INF);
+        printf("depth %i pv %s eval %i\n", i, move_to_uci(best_move).c_str(), best_eval);
 
         if (current_time() > search_limit) {
             break;
@@ -76,5 +79,4 @@ int Searcher::start_search(Board &board, int max_time, int max_depth) {
     }
 
     return best_eval;
-} 
-
+}
