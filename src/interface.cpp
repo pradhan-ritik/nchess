@@ -96,4 +96,25 @@ void Interface::go(std::vector<std::string>& args_vector, int length) {
         printf("bestmove %s\n", move_to_uci(searcher->best_move).c_str()); // implement ponder (eventually)
     }
 
+    bool turn = board->get_turn();
+    int time/*, increment*/;
+    for (int i = 1; i < length; i++) {
+        if (turn == WHITE && args_vector[i] == "wtime")
+            time = std::stoi(args_vector[i+1]);
+
+        if (turn == BLACK && args_vector[i] == "btime")
+            time = std::stoi(args_vector[i+1]);
+
+        /*if (turn == WHITE && args_vector[i] == "winc")
+            increment = args_vector[i+1];
+
+        if (turn == BLACK && args_vector[i] == "binc")
+            increment = args_vector[i+1];*/
+    }
+
+    if (time) {
+        printf("time: %i\n", time);
+        searcher->start_search(*board, searcher->get_time_for_move(time));
+        printf("bestmove %s\n", move_to_uci(searcher->best_move).c_str());
+    }
 }
