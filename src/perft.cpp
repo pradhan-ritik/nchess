@@ -44,7 +44,7 @@ BB perft_divide(Board& board, int depth) {
               nodes_here = perft(board, depth - 1);
         
             nodes += nodes_here;
-            printf("%s: %lu\n", move_to_uci(move), nodes_here);
+            printf("%s: %lu\n", move_to_uci(move).c_str(), nodes_here);
         }
 
         board.undo_last_move();

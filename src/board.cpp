@@ -125,7 +125,6 @@ void Board::set_game(const char* fen, bool from_interface) {
     while (running) {
         cur = *(fen++);
         white_piece = std::isupper(cur);
-        printf("POS: %i PIECE %c\n", pos, cur);
         cur = std::tolower(cur);
         switch (cur) {
             case 'p':
@@ -280,7 +279,7 @@ void Board::display_game(bool show_bitboards) {
     printf("Current En Pessant: %i\n", get_en_pessant());
 }
 
-bool Board::play_move(Move move) {
+void Board::play_move(Move move) {
     uint16_t crules = rules;
     int en_pessant_position = 0;
     if (is_normal_move(move)) 
@@ -302,7 +301,6 @@ bool Board::play_move(Move move) {
     set_en_pessant(en_pessant_position);
     history[++history_pointer] = init_history(move, captured_piece, crules);
     next_turn();
-    return was_move_legal();
 }
 
 int Board::_play_normal_move(Move move) {

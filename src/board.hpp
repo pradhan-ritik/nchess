@@ -48,7 +48,7 @@ struct Board {
     Board(const char* fen);
     void set_game(const char* fen, bool from_interface=true);
     void display_game(bool show_bitboards=false);
-    bool play_move(Move move); // returns true if the move was legal
+    void play_move(Move move); // returns true if the move was legal
     void undo_last_move();
     void generate_psuedo_legal_moves(Movelist& movelist);
     void generate_noisy_moves(Movelist& movelist); // noisy moves include captures, and checks
@@ -57,7 +57,8 @@ struct Board {
 
     // small and quick functions
     inline bool is_move_legal(Move move) {
-        bool legal = play_move(move);
+        play_move(move);
+        bool legal = was_move_legal();
         undo_last_move();
         return legal;
     }
