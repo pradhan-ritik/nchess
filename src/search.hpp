@@ -19,6 +19,9 @@ struct Searcher {
     Move best_move;
     Time search_limit;
 
+    inline int get_time_for_move(int total_time) {
+        return total_time / 10;
+    }
     int search(Board &board, int depth, int alpha, int beta);
     int start_search(Board &board, int max_time, int max_depth=255);
 };
