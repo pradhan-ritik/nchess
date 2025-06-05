@@ -6,6 +6,7 @@
 #include "board.hpp"
 
 enum MOVEGEN_STAGE {
+    GENERATE_PV,
     GENERATE_NOISY,
     GENERATE_QUIET,
     MOVEGEN_FINISHED
@@ -173,11 +174,12 @@ struct Movepicker {
     private:
     Board* board;
     Movelist movelist;
+    Move pv_move;
     int movelist_length;
     int stage;
 
     public:
-    Movepicker(Board* board);
+    Movepicker(Board* board, Move pv_move=NULL_MOVE);
     Move next_move();
 };
 

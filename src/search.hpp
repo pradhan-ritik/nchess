@@ -17,6 +17,7 @@ struct Searcher {
     int best_eval;
     int starting_depth;
     Move best_move;
+    Move pv_move;
     Time search_limit;
 
     inline int get_time_for_move(int total_time) {

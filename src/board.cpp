@@ -413,3 +413,88 @@ void Board::_undo_castle(Move move) {
     _undo_set_piece_on_pos(KING, from_, turn);
     _undo_set_piece_on_pos(ROOK, original_rook_position, turn);
 }
+
+bool Board::is_move_pseudo_legal(Move move) {
+    int from_ = from(move);
+    int to_ = to(move);
+    BB bb_from = bb(from_);
+    BB bb_to = bb(to_);
+    bool is_normal_move_ = is_normal_move(move);
+    bool turn = get_turn();
+    PIECE piece = get_piece_on_pos(from_);
+    BB not_same_team = ~get_color();
+    BB empties = get_empties();
+    BB other_team = get_other_team_color();
+
+    if (piece == EMPTY || move == NULL_MOVE || (turn == WHITE ? is_black_piece(from_) : !is_black_piece(from_)))
+        return false;
+
+    // knight, bishop, rook, and queen are psuedo legal as long as the destination is an attacked square (excluding same team pieces)
+    if (piece == KNIGHT) {
+        return is_normal_move_ && (bb_to & knight_attacks(bb_from) & not_same_team);
+    } 
+
+    if (piece == BISHOP) {
+        return is_normal_move_ && (bb_to & bishop_attacks(bb_from, empties) & not_same_team);
+    }
+
+    if (piece == ROOK) {
+        return is_normal_move_ && (bb_to & rook_attacks(bb_from, empties) & not_same_team);
+    }
+
+    if (piece == QUEEN) {
+        return is_normal_move_ && (bb_to & queen_attacks(bb_from, empties) & not_same_team);
+    }
+
+    if (piece == PAWN) {
+        if (is_castle(move))
+            return false;
+
+        if (is_en_pessant(move)) {
+            return get_en_pessant() == to_ && (pawn_attacks(bb_from, turn) & bb_to); 
+        } 
+
+        BB forward = pawn_push(bb_from, turn) & empties;
+        BB attacks = pawn_attacks(bb_from, turn) & other_team; 
+        BB promotion_rank = RANK_1 | RANK_8;
+
+        if (is_promotion(move)) {
+            return promotion_rank & ((attacks & other_team) | forward) & bb_to; 
+        }
+        
+        forward |= pawn_push(forward & get_third_pawn_rank(), turn) & empties; 
+
+        return ~promotion_rank & ((attacks & other_team) | forward) & bb_to;
+    }
+
+    if (piece == KING) {
+        if (is_normal_move_) {
+            return king_attacks(bb_from) & not_same_team & bb_to;
+        }
+
+        if (!is_castle(move))
+            return false;
+        
+        // Just try to create two possible castle moves, and if one matches, then it is psuedo legal
+        if (king_attackers())
+            return false;
+
+        bool is_castle_pseudo_legal = false;
+
+        int shift = turn * 56;
+        // kingside castle
+        if (get_castle(KINGSIDE, turn) && in_BB(empties, (0b110ULL << shift))) {
+            is_castle_pseudo_legal |= move == init_move(from_, shift + 1, CASTLE);
+        }
+
+        // queenside castle
+        if (get_castle(QUEENSIDE, turn) && in_BB(empties, (0b1110000ULL << shift))) {
+            is_castle_pseudo_legal |= move == init_move(from_, shift + 5, CASTLE);
+        } 
+
+        return is_castle_pseudo_legal;
+    }
+
+    printf("Something went wrong in Board::is_move_psuedo_legal()\n");
+    return false;
+}

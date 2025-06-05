@@ -1,23 +1,23 @@
 #include "search.hpp"
 
 int Searcher::search(Board &board, int depth, int alpha, int beta) {
+    if (current_time() > search_limit) {
+        return 0;
+    } 
+
     alpha = std::max(alpha, NEGINF + (starting_depth - depth));
     beta = std::min(beta, INF - (starting_depth - depth));
 
     if (alpha >= beta) { // mate has been found earlier in the search
         return alpha;
-    }
-
-    if (current_time() > search_limit) {
-        return 0;
-    }
+    } 
 
     if (depth == 0) {
         return evaluate(board) * -((board.get_turn())*2 - 1);
     }
 
     int best_eval_this_depth = NEGINF;
-    Movepicker mp = Movepicker(&board);
+    Movepicker mp = Movepicker(&board, pv_move);
     Move move;
     bool generated_moves = false;
     while ((move = mp.next_move()) != NULL_MOVE) {
@@ -30,8 +30,13 @@ int Searcher::search(Board &board, int depth, int alpha, int beta) {
         generated_moves = true;
         int evaluation = -search(board, depth - 1, -beta, -alpha);
         board.undo_last_move();
-        best_eval_this_depth = std::max(evaluation, best_eval_this_depth);
-        
+
+        if (current_time() > search_limit) {
+            return 0;
+        }
+
+        best_eval_this_depth = std::max(evaluation, best_eval_this_depth); 
+
         if (evaluation > alpha) {
             alpha = evaluation;
             if (depth == starting_depth) { // original depth
@@ -42,11 +47,7 @@ int Searcher::search(Board &board, int depth, int alpha, int beta) {
         
         if (evaluation >= beta) {
             return beta;
-        }
-
-        if (current_time() > search_limit) {
-            return 0;
-        }
+        } 
     }
 
     if (!generated_moves) {
@@ -65,12 +66,15 @@ int Searcher::start_search(Board &board, int max_time, int max_depth) {
 
     // Even if there is no time, there will stil be something to play
     starting_depth = 1;
+    pv_move = NULL_MOVE;
     search(board, 1, NEGINF, INF);
+    pv_move = best_move;
     printf("info depth 1 time 0 pv %s score %i\n", move_to_uci(best_move).c_str(), best_eval);
 
     for (int i = 2; i <= max_depth; i++) {
         starting_depth = i;
         search(board, i, NEGINF, INF);
+        pv_move = best_move;
         printf("info depth %i time %li pv %s score %i\n", i, current_time() - search_limit + max_time, move_to_uci(best_move).c_str(), best_eval);
 
         if (current_time() > search_limit) {
