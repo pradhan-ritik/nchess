@@ -50,9 +50,7 @@ struct Board {
     void display_game(bool show_bitboards=false);
     void play_move(Move move); // returns true if the move was legal
     void undo_last_move();
-    void generate_psuedo_legal_moves(Movelist& movelist);
-    void generate_noisy_moves(Movelist& movelist); // noisy moves include captures, and checks
-    void generate_quiet_moves(Movelist& movelist);
+    bool is_move_pseudo_legal(Move move);
 
 
     // small and quick functions
