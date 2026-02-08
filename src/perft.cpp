@@ -35,7 +35,7 @@ BB perft_divide(Board& board, int depth) {
     Movepicker mp = Movepicker(&board);
     
     Move move;
-    while ((move = mp.next_move()) != NULL_MOVE) {
+    while (((move = mp.next_move()) != NULL_MOVE)) {
         board.play_move(move);
         if (board.was_move_legal()) {
             //if (depth == 1)
@@ -48,6 +48,7 @@ BB perft_divide(Board& board, int depth) {
         }
 
         board.undo_last_move();
+        // if (board.get_piece_on_pos(c1) != BISHOP) break;
     }
 
     return nodes;

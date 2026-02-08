@@ -45,6 +45,7 @@ struct Board {
     }
 
     public:
+    bool debug = false; 
     Board(const char* fen);
     void set_game(const char* fen, bool from_interface=true);
     void display_game(bool show_bitboards=false);
@@ -72,10 +73,10 @@ struct Board {
         captured_piece = board_array[pos];
         // printf("PIECE: %i POS: %i \n", piece, pos);
         board_array[pos] = piece;
-        set_bit_on(pieces[piece], pos);
-        set_bit_on(colors[turn], pos);
         set_bit_off(pieces[captured_piece], pos);
         set_bit_off(colors[other_turn()], pos);
+        set_bit_on(pieces[piece], pos);
+        set_bit_on(colors[turn], pos);
     }
 
 
@@ -85,11 +86,12 @@ struct Board {
         next_turn();
     }
 
-    inline void clear_pos(int pos) {
+    inline void clear_pos(int pos, bool other_team=false) {
+        bool turn_ = other_team ? other_turn() : turn;
         PIECE removed = board_array[pos];
         board_array[pos] = EMPTY;
         set_bit_off(pieces[removed], pos);
-        set_bit_off(colors[turn], pos);
+        set_bit_off(colors[turn_], pos);
     }
 
     inline PIECE get_piece_on_pos(int pos) {

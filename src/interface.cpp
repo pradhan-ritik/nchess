@@ -64,7 +64,7 @@ void Interface::run_command(std::string& args) {
 void Interface::position(std::vector<std::string>& args_vector, int length) {
     int moves_pos = 0;
     if (args_vector[1] == "fen") {
-        moves_pos = 8;
+        moves_pos = 9;
         // printf("fen: %s", std::accumulate(args_vector.begin()+2, args_vector.end(), std::string(""), [](std::string& a, std::string &b) {return a + " " + b;}).c_str());
         board->set_game(std::accumulate(args_vector.begin()+2, args_vector.end(), std::string(""), [](std::string& a, std::string &b) {return a + " " + b;}).c_str());
         // board->display_game();
@@ -73,7 +73,7 @@ void Interface::position(std::vector<std::string>& args_vector, int length) {
     if (moves_pos || args_vector[1] == "startpos") {
         if (!moves_pos) {
             board->set_game("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", false);        
-            moves_pos = 2;
+            moves_pos = 3;
         }
 
         for (int i = moves_pos; i < length; i++) {
@@ -82,18 +82,23 @@ void Interface::position(std::vector<std::string>& args_vector, int length) {
     }
 
     if (args_vector[1] == "display") {
-        board->display_game();
+        if (length > 2 && args_vector[2] == "bitboards") 
+            board->display_game(true);
+        else
+            board->display_game();
     }
 }
 
 void Interface::go(std::vector<std::string>& args_vector, int length) {
     if (args_vector[1] == "perft") {
         perft_info(*board, std::stoi(args_vector[2]));
+        return;
     }
 
     else if (args_vector[1] == "depth") {
         searcher->start_search(*board, 1000000000, std::stoi(args_vector[2]));
         printf("bestmove %s\n", move_to_uci(searcher->best_move).c_str()); // implement ponder (eventually)
+        return;
     }
 
     bool turn = board->get_turn();

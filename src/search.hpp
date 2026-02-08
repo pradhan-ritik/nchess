@@ -19,6 +19,7 @@ struct Searcher {
     Move best_move;
     Move pv_move;
     Time search_limit;
+    Move last_move;
 
     inline int get_time_for_move(int total_time) {
         return total_time / 10;

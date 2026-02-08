@@ -1,7 +1,7 @@
 #include "board.hpp"
 
 Board::Board(const char* fen) {
-    history_pointer = 0;
+    history_pointer = -1;
     for (int i = 0; i < 256; i++) {
         history[i] = EMPTY_HISTORY;
     }
@@ -99,7 +99,7 @@ Board::Board(const char* fen) {
 
 void Board::set_game(const char* fen, bool from_interface) {
     fen += from_interface;
-    history_pointer = 0;
+    history_pointer = -1;
     for (int i = 0; i < 256; i++) {
         history[i] = EMPTY_HISTORY;
     }
@@ -261,12 +261,12 @@ void Board::display_game(bool show_bitboards) {
     
 
     if (show_bitboards) {
-        for (int i = 1; i < 7; i++) {
-            print_BB(get_piece_bb(PIECE(i)));
-        }
-        
         for (int i = 0; i < 2; i++) {
             print_BB(get_color(PIECE(i)));
+        }
+
+        for (int i = 1; i < 7; i++) {
+            print_BB(get_piece_bb(PIECE(i)));
         }
     }
 
@@ -307,8 +307,8 @@ int Board::_play_normal_move(Move move) {
     int from_ = from(move);
     int to_ = to(move);
     PIECE piece = board_array[from_];
-    set_piece_on_pos(piece, to_);
     clear_pos(from_);
+    set_piece_on_pos(piece, to_);
     if (piece == ROOK) {
         if (from_ == get_original_rook_position(KINGSIDE)) {
             remove_castle(KINGSIDE, turn);
@@ -349,7 +349,7 @@ void Board::_play_castle(Move move) {
 void Board::_play_en_pessant(Move move) {
     int pawn_direction = get_pawn_direction();
     int to_ = to(move);
-    clear_pos(to_ - pawn_direction);
+    clear_pos(to_ - pawn_direction, true/*for other team*/);
     clear_pos(from(move));
     set_piece_on_pos(PAWN, to_);
 }
@@ -378,6 +378,9 @@ void Board::undo_last_move() {
 }
 
 void Board::_undo_normal_move(Move move, PIECE captured) {
+    if (debug) {
+        printf("MOVE: %s\n", move_to_uci(move).c_str());
+    }
     int from_ = from(move); 
     int to_ = to(move);
     _undo_set_piece_on_pos(get_piece_on_pos(to_), from_, turn);

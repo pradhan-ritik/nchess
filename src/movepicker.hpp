@@ -54,6 +54,7 @@ template <MOVEGEN_STAGE stage> inline int generate_pawn_moves(Board& board, Move
             }
         }
     }
+
     // en pessants
     if constexpr (stage == GENERATE_NOISY) {
         int target = board.get_en_pessant();
@@ -128,7 +129,7 @@ template <MOVEGEN_STAGE stage, PIECE piece> inline int generate_major_piece_move
 template <MOVEGEN_STAGE stage> inline int generate_king_moves(Board& board, Movelist& movelist) {
     bool turn = board.get_turn();
     BB same_team_king = board.get_piece_bb(KING, turn);
-    BB no_hit = board.get_color(); // same team
+    BB no_hit = board.get_color() | king_attacks(board.get_piece_bb(KING, !turn)); // same team
     BB empties = board.get_empties();
 
     if (stage == GENERATE_NOISY) {
@@ -148,12 +149,28 @@ template <MOVEGEN_STAGE stage> inline int generate_king_moves(Board& board, Move
     if (stage == GENERATE_QUIET && !board.king_attackers()) {
         int shift = turn * 56;
         if (board.get_castle(KINGSIDE, turn) && in_BB(empties, (0b110ULL << shift))) {
-            movelist.add_move(init_move(from_, shift + 1, CASTLE));
+            BB attack_mask = 0b110ULL << shift;
+            bool squares_under_attack = false;
+            while (attack_mask) {
+                int pos = pop_lsb(attack_mask);
+                squares_under_attack |= bool(board.square_attackers(pos));
+            }
+
+            if (!squares_under_attack)
+                movelist.add_move(init_move(from_, shift + 1, CASTLE));
         }
 
         // queenside castle
         if (board.get_castle(QUEENSIDE, turn) && in_BB(empties, (0b1110000ULL << shift))) {
-            movelist.add_move(init_move(from_, shift + 5, CASTLE));
+            BB attack_mask = 0b110000ULL << shift;
+            bool squares_under_attack = false;
+            while (attack_mask) {
+                int pos = pop_lsb(attack_mask);
+                squares_under_attack |= bool(board.square_attackers(pos));
+            }
+
+            if (!squares_under_attack)
+                movelist.add_move(init_move(from_, shift + 5, CASTLE));
         }
     }
 

@@ -28,8 +28,34 @@ int Searcher::search(Board &board, int depth, int alpha, int beta) {
         }
     
         generated_moves = true;
+        if (depth == 5)
+            last_move = move;
         int evaluation = -search(board, depth - 1, -beta, -alpha);
-        board.undo_last_move();
+        // if (!(starting_depth == 6 && depth == 4 && last_move == init_move(g2, g3, NORMAL_MOVE))) {
+            board.undo_last_move();
+        // }
+        // else {
+        //     printf("Move: %s last_move: %s\n", move_to_uci(move).c_str(), move_to_uci(last_move).c_str());
+        //         board.display_game();
+        //         board.debug = true;
+        //         board.undo_last_move();
+        //         board.debug = false;
+        // }
+        // if (starting_depth > 3 && starting_depth < 6 && depth == starting_depth)
+        //     printf("PIECE %i on f4 depth %i starting depth %i currmove %s\n", board.get_piece_on_pos(f4), depth, starting_depth, move_to_uci(move).c_str());
+        // if (board.get_piece_on_pos(f4) != BISHOP && depth == starting_depth) {
+        //     printf("On depth %i, starting_depth %i Bishop has been turned into rook, Move %s\n", depth, starting_depth, move_to_uci(move).c_str());
+        // }
+        // if (starting_depth == 6 && depth == 4) {
+        //     if (last_move == init_move(d1, c1, NORMAL_MOVE)) {
+        //         printf("Move: %s last_move: %s\n", move_to_uci(move).c_str(), move_to_uci(last_move).c_str());
+        //         board.debug = true;
+        //         board.undo_last_move();
+        //         board.debug = false;
+        //         board.display_game();
+        //     }
+        //     // printf("PIECE %i on f4 depth\n", board.get_piece_on_pos(f4));
+        // }
 
         if (current_time() > search_limit) {
             return 0;
@@ -40,6 +66,7 @@ int Searcher::search(Board &board, int depth, int alpha, int beta) {
         if (evaluation > alpha) {
             alpha = evaluation;
             if (depth == starting_depth) { // original depth
+                // printf("At depth %i, New best move: %s, is psuedo legal? %i\n", depth, move_to_uci(move).c_str(), board.is_move_pseudo_legal(move));
                 best_move = move;
                 best_eval = evaluation;
             }
